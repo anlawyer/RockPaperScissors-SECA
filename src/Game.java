@@ -4,15 +4,16 @@ import java.util.Scanner;
 
 public class Game {
     // initialize scanner receiving input
-    // always initialize one player
     Scanner scanner = new Scanner(System.in);
+    // always initialize one player
     Player player1 = new Player();
 
     Game() {
         // game constructor: intro to game, call startGame method
         System.out.println("Enter your name to get started:");
-        player1.name = scanner.nextLine();
-        System.out.println("Welcome, " + player1.name + "!");
+        String player1name = scanner.nextLine();
+        player1.setName(player1name);
+        System.out.println("Welcome, " + player1.getName() + "!");
         System.out.println("Would you like to play against the computer or a friend?");
         System.out.println("Type: computer or friend.");
         this.startGame();
@@ -50,10 +51,10 @@ public class Game {
         player2.setName("Computer");
         System.out.println(player1.getName() + ", your turn. Enter your play! Type: rock, paper, or scissors.");
 
-        String players1play = scanner.nextLine();
+        String player1play = scanner.nextLine();
         try {
-            if (players1play.toLowerCase().equals("rock") || players1play.toLowerCase().equals("paper") || players1play.toLowerCase().equals("scissors")) {
-                player1.setPlay(players1play.toLowerCase());
+            if (player1play.toLowerCase().equals("rock") || player1play.toLowerCase().equals("paper") || player1play.toLowerCase().equals("scissors")) {
+                player1.setPlay(player1play.toLowerCase());
                 System.out.println("You played: " + player1.getPlay());
 
                 // generate computer's play
@@ -68,14 +69,15 @@ public class Game {
                 }
                 System.out.println(player2.getName() + " played: " + player2.getPlay());
 
+                // set variable to response from user from round() method
                 String playAgain = this.round(player1, player2);
 
                 try {
-                    if (playAgain.equals("yes")) {
-                        System.out.println(player1.getName() + ", you have " + player1.score + " points.");
-                        System.out.println(player2.getName() + " has " + player2.getScore() + " points.");
+                    if (playAgain.equals("tied")) {
                         this.computerPlayer();
-                    } else if (playAgain.equals("tied")) {
+                    } else if (playAgain.equals("yes")) {
+                        System.out.println(player1.getName() + ", you have " + player1.getScore() + " points.");
+                        System.out.println(player2.getName() + " has " + player2.getScore() + " points.");
                         this.computerPlayer();
                     } else if (playAgain.equals("no")) {
                         System.out.println(player1.getName() + ", you have " + player1.score + " points.");
@@ -86,7 +88,8 @@ public class Game {
                     }
                 }
                 catch (InputMismatchException e) {
-                    System.out.println("Please enter yes or no.");
+                    System.out.println("Could not determine input, restarting game.");
+                    Game restart = new Game();
                 }
             }
             else {
@@ -108,21 +111,22 @@ public class Game {
                 player1.setPlay(player1play.toLowerCase());
                 System.out.println("You played: " + player1.getPlay());
 
-                System.out.println(player2.name + ", your turn. Enter your play! Type: rock, paper, or scissors.");
+                System.out.println(player2.getName() + ", your turn. Enter your play! Type: rock, paper, or scissors.");
                 String player2play = scanner.nextLine();
                 try {
-                    if (player1play.toLowerCase().equals("rock") || player1play.toLowerCase().equals("paper") || player1play.toLowerCase().equals("scissors")) {
+                    if (player2play.toLowerCase().equals("rock") || player2play.toLowerCase().equals("paper") || player2play.toLowerCase().equals("scissors")) {
                         player2.setPlay(player2play.toLowerCase());
                         System.out.println(player2.getName() + " played: " + player2.getPlay());
 
+                        // set variable to response from user from round() method
                         String playAgain = this.round(player1, player2);
 
                         try {
-                            if (playAgain.equals("yes")) {
+                            if (playAgain.equals("tied")) {
+                                this.twoPlayers(player2);
+                            } else if (playAgain.equals("yes")) {
                                 System.out.println(player1.getName() + ", you have " + player1.getScore() + " points.");
                                 System.out.println(player2.getName() + ", you have " + player2.getScore() + " points.");
-                                this.twoPlayers(player2);
-                            } else if (playAgain.equals("tied")) {
                                 this.twoPlayers(player2);
                             } else if (playAgain.equals("no")) {
                                 System.out.println(player1.getName() + ", you have " + player1.getScore() + " points.");
@@ -133,14 +137,19 @@ public class Game {
                             }
                         }
                         catch (InputMismatchException e) {
-                            System.out.println("Please enter yes or no.");
+                            System.out.println("Could not determine input, restarting game.");
+                            Game restart = new Game();
                         }
+                    } else {
+                        throw new InputMismatchException();
                     }
                 } catch (InputMismatchException e) {
                     // handle improper input
                     System.out.println("Please enter: rock, paper, or scissors.");
                     this.twoPlayers(player2);
                 }
+            } else {
+                throw new InputMismatchException();
             }
         }
         catch (InputMismatchException e) {
@@ -151,11 +160,11 @@ public class Game {
     }
 
     public String round (Player player1, Player player2) {
-        // default to another round is no
+        // default to another round is no, scores are 0
         String playAgain = "no";
         int player1score = 0;
         int player2score = 0;
-        // conditional statements to determine winner of each round
+        // conditional statements to determine winner of each round and update score/outcomes
         if (player2.getPlay().equals(player1.getPlay())) {
             System.out.println("Tied game! Play again.");
             playAgain = "tied";
