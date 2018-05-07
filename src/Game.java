@@ -1,109 +1,163 @@
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
     // initialize scanner receiving input
+    // always initialize one player
     Scanner scanner = new Scanner(System.in);
     Player player1 = new Player();
 
     Game() {
-        // intro to game, call startGame method
-        System.out.println("Welcome!");
+        // game constructor: intro to game, call startGame method
+        System.out.println("Enter your name to get started:");
+        player1.name = scanner.nextLine();
+        System.out.println("Welcome, " + player1.name + "!");
         System.out.println("Would you like to play against the computer or a friend?");
         System.out.println("Type: computer or friend.");
         this.startGame();
     }
 
-    // call proper play method depending on user's desire
-    public void startGame() {
+    // call proper play method depending on user's request
+    public void startGame () {
         String determinePlayer = scanner.nextLine();
-//        try {
+        try {
             if (determinePlayer.toLowerCase().equals("computer")) {
-                System.out.println("You're about to play the: " + determinePlayer);
                 this.computerPlayer();
             } else if (determinePlayer.toLowerCase().equals("friend")) {
-                System.out.println("You're about to play your: " + determinePlayer);
+                this.twoPlayers();
             } else if (determinePlayer.toLowerCase().equals("exit")) {
                 System.out.println("Thanks for playing!");
             }
             else {
-//                throw new Exception(InputMismatchException);
-                System.out.println("Would you like to play against the computer, a friend, or exit?");
-                this.startGame();
+                throw new InputMismatchException();
             }
-//        }
-//        catch () {
-//            // handle improper input
-//            System.out.println("Would you like to play against the computer, a friend, or exit?");
-//            this.startGame();
-//        }
+        }
+        catch (InputMismatchException e) {
+            // handle improper input
+            System.out.println("Would you like to play against the computer, a friend, or exit?");
+            this.startGame();
+        }
     }
 
     public void computerPlayer () {
-        System.out.println("Enter your play! Type: rock, paper, or scissors.");
+        Player player2 = new Player();
+        player2.name = "Computer";
+        System.out.println(player1.name + ", your turn. Enter your play! Type: rock, paper, or scissors.");
 
-        String playersPlay = scanner.nextLine();
-        player1.play = playersPlay.toLowerCase();
+        String players1play = scanner.nextLine();
+        player1.play = players1play.toLowerCase();
         System.out.println("You played: " + player1.play);
 
+        // generate computer's play
         Random randomPlay = new Random();
         int computersRand = randomPlay.nextInt(3);
-        String computersPlay;
-
         if (computersRand == 0) {
-            computersPlay = "rock";
+            player2.play = "rock";
         } else if (computersRand == 1) {
-            computersPlay = "paper";
+            player2.play = "paper";
         } else {
-            computersPlay = "scissors";
+            player2.play = "scissors";
         }
-        System.out.println("Computer played: " + computersPlay);
+        System.out.println(player2.name + " played: " + player2.play);
 
-        String playAgain = "no";
-
-        if (computersPlay.equals(player1.play)) {
-            System.out.println("Tied game! Play again.");
-            playAgain = "tied";
-        } else if (player1.play.equals("rock") && computersPlay.equals("paper")) {
-            System.out.println("Computer wins! Play again?");
-            player1.outcome = "lost";
-            playAgain = scanner.nextLine();
-        } else if (player1.play.equals("paper") && computersPlay.equals("rock")) {
-            System.out.println("Player wins! Play again?");
-            player1.points += 1;
-            player1.outcome = "won";
-            playAgain = scanner.nextLine();
-        } else if (player1.play.equals("paper") && computersPlay.equals("scissors")) {
-            System.out.println("Computer wins! Play again?");
-            player1.outcome = "lost";
-            playAgain = scanner.nextLine();
-        } else if (player1.play.equals("scissors") && computersPlay.equals("paper")) {
-            System.out.println("Player wins! Play again?");
-            player1.outcome = "won";
-            player1.points += 1;
-            playAgain = scanner.nextLine();
-        } else if (player1.play.equals("scissors") && computersPlay.equals("rock")) {
-            System.out.println("Computer wins! Play again?");
-            player1.outcome = "lost";
-            playAgain = scanner.nextLine();
-        } else if (player1.play.equals("rock") && computersPlay.equals("scissors")) {
-            System.out.println("Player wins! Play again?");
-            player1.outcome = "won";
-            player1.points += 1;
-            playAgain = scanner.nextLine();
-        }
+        String playAgain = this.round(player1, player2);
 
         switch (playAgain) {
             case "yes":
-                Game nextRound = new Game();
+//                Game nextRound = new Game();
+                System.out.println(player1.name + ", you have " + player1.score + " points.");
+                this.computerPlayer();
                 break;
             case "tied":
                 this.computerPlayer();
                 break;
             default:
-                System.out.println(player1.points);
+                System.out.println(player1.name + ", you have " + player1.score + " points.");
                 System.out.println("Thanks for playing!");
                 break;
         }
+    }
+
+    public void twoPlayers () {
+        Player player2 = new Player();
+        System.out.println("Have your friend type their name:");
+        player2.name = scanner.nextLine();
+        System.out.println("Welcome, " + player2.name + "!");
+
+        System.out.println(player1.name + ", your turn. Enter your play! Type: rock, paper, or scissors.");
+        String player1play = scanner.nextLine();
+        player1.play = player1play.toLowerCase();
+        System.out.println("You played: " + player1.play);
+
+        System.out.println(player2.name + ", your turn. Enter your play! Type: rock, paper, or scissors.");
+        String player2play = scanner.nextLine();
+        player2.play = player2play.toLowerCase();
+        System.out.println(player2.name + " played: " + player2.play);
+
+        String playAgain = this.round(player1, player2);
+
+        switch (playAgain) {
+            case "yes":
+                System.out.println(player1.name + ", you have " + player1.score + " points.");
+//                Game nextRound = new Game();
+                this.twoPlayers();
+                break;
+            case "tied":
+                this.twoPlayers();
+                break;
+            default:
+                System.out.println(player1.name + ", you have " + player1.score + " points.");
+                System.out.println(player2.name + ", you have " + player2.score + " points.");
+                System.out.println("Thanks for playing!");
+                break;
+        }
+    }
+
+    public String round (Player player1, Player player2) {
+        // default to another round is no
+        String playAgain = "no";
+        // conditional statements to determine winner of each round
+        if (player2.play.equals(player1.play)) {
+            System.out.println("Tied game! Play again.");
+            playAgain = "tied";
+        } else if (player1.play.equals("rock") && player2.play.equals("paper")) {
+            System.out.println(player2.name + " wins! Play again?");
+            player1.outcome = "lost";
+            player2.outcome = "won";
+            player2.score += 1;
+            playAgain = scanner.nextLine();
+        } else if (player1.play.equals("paper") && player2.play.equals("rock")) {
+            System.out.println(player1.name + " wins! Play again?");
+            player1.outcome = "won";
+            player2.outcome = "lost";
+            player1.score += 1;
+            playAgain = scanner.nextLine();
+        } else if (player1.play.equals("paper") && player2.play.equals("scissors")) {
+            System.out.println("Computer wins! Play again?");
+            player1.outcome = "lost";
+            player2.outcome = "won";
+            player2.score += 1;
+            playAgain = scanner.nextLine();
+        } else if (player1.play.equals("scissors") && player2.play.equals("paper")) {
+            System.out.println(player1.name + " wins! Play again?");
+            player1.outcome = "won";
+            player2.outcome = "lost";
+            player1.score += 1;
+            playAgain = scanner.nextLine();
+        } else if (player1.play.equals("scissors") && player2.play.equals("rock")) {
+            System.out.println("Computer wins! Play again?");
+            player1.outcome = "lost";
+            player2.outcome = "won";
+            player2.score += 1;
+            playAgain = scanner.nextLine();
+        } else if (player1.play.equals("rock") && player2.play.equals("scissors")) {
+            System.out.println(player1.name + " wins! Play again?");
+            player1.outcome = "won";
+            player2.outcome = "lost";
+            player1.score += 1;
+            playAgain = scanner.nextLine();
+        }
+        return playAgain;
     }
 }
