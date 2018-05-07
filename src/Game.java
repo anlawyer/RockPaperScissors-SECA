@@ -46,36 +46,50 @@ public class Game {
         System.out.println(player1.name + ", your turn. Enter your play! Type: rock, paper, or scissors.");
 
         String players1play = scanner.nextLine();
-        player1.play = players1play.toLowerCase();
-        System.out.println("You played: " + player1.play);
+        try {
+            if (players1play.toLowerCase().equals("rock") || players1play.toLowerCase().equals("paper") || players1play.toLowerCase().equals("scissors")) {
+                player1.play = players1play.toLowerCase();
+                System.out.println("You played: " + player1.play);
 
-        // generate computer's play
-        Random randomPlay = new Random();
-        int computersRand = randomPlay.nextInt(3);
-        if (computersRand == 0) {
-            player2.play = "rock";
-        } else if (computersRand == 1) {
-            player2.play = "paper";
-        } else {
-            player2.play = "scissors";
+                // generate computer's play
+                Random randomPlay = new Random();
+                int computersRand = randomPlay.nextInt(3);
+                if (computersRand == 0) {
+                    player2.play = "rock";
+                } else if (computersRand == 1) {
+                    player2.play = "paper";
+                } else {
+                    player2.play = "scissors";
+                }
+                System.out.println(player2.name + " played: " + player2.play);
+
+                String playAgain = this.round(player1, player2);
+
+                try {
+                    if (playAgain.equals("yes")) {
+                        System.out.println(player1.name + ", you have " + player1.score + " points.");
+                        this.computerPlayer();
+                    } else if (playAgain.equals("tied")) {
+                        this.computerPlayer();
+                    } else if (playAgain.equals("no")) {
+                        System.out.println(player1.name + ", you have " + player1.score + " points.");
+                        System.out.println("Thanks for playing!");
+                    } else {
+                        throw new InputMismatchException();
+                    }
+                }
+                catch (InputMismatchException e) {
+                    System.out.println("Please enter yes or no.");
+                }
+            }
+            else {
+                throw new InputMismatchException();
+            }
         }
-        System.out.println(player2.name + " played: " + player2.play);
-
-        String playAgain = this.round(player1, player2);
-
-        switch (playAgain) {
-            case "yes":
-//                Game nextRound = new Game();
-                System.out.println(player1.name + ", you have " + player1.score + " points.");
-                this.computerPlayer();
-                break;
-            case "tied":
-                this.computerPlayer();
-                break;
-            default:
-                System.out.println(player1.name + ", you have " + player1.score + " points.");
-                System.out.println("Thanks for playing!");
-                break;
+        catch (InputMismatchException e) {
+            // handle improper input
+            System.out.println("Please enter: rock, paper, or scissors.");
+            this.computerPlayer();
         }
     }
 
@@ -87,30 +101,50 @@ public class Game {
 
         System.out.println(player1.name + ", your turn. Enter your play! Type: rock, paper, or scissors.");
         String player1play = scanner.nextLine();
-        player1.play = player1play.toLowerCase();
-        System.out.println("You played: " + player1.play);
+        try {
+            if (player1play.toLowerCase().equals("rock") || player1play.toLowerCase().equals("paper") || player1play.toLowerCase().equals("scissors")) {
+                player1.play = player1play.toLowerCase();
+                System.out.println("You played: " + player1.play);
 
-        System.out.println(player2.name + ", your turn. Enter your play! Type: rock, paper, or scissors.");
-        String player2play = scanner.nextLine();
-        player2.play = player2play.toLowerCase();
-        System.out.println(player2.name + " played: " + player2.play);
+                System.out.println(player2.name + ", your turn. Enter your play! Type: rock, paper, or scissors.");
+                String player2play = scanner.nextLine();
+                try {
+                    if (player1play.toLowerCase().equals("rock") || player1play.toLowerCase().equals("paper") || player1play.toLowerCase().equals("scissors")) {
+                        player2.play = player2play.toLowerCase();
+                        System.out.println(player2.name + " played: " + player2.play);
 
-        String playAgain = this.round(player1, player2);
+                        String playAgain = this.round(player1, player2);
 
-        switch (playAgain) {
-            case "yes":
-                System.out.println(player1.name + ", you have " + player1.score + " points.");
-//                Game nextRound = new Game();
-                this.twoPlayers();
-                break;
-            case "tied":
-                this.twoPlayers();
-                break;
-            default:
-                System.out.println(player1.name + ", you have " + player1.score + " points.");
-                System.out.println(player2.name + ", you have " + player2.score + " points.");
-                System.out.println("Thanks for playing!");
-                break;
+                        try {
+                            if (playAgain.equals("yes")) {
+                                System.out.println(player1.name + ", you have " + player1.score + " points.");
+                                System.out.println(player2.name + ", you have " + player2.score + " points.");
+                                this.twoPlayers();
+                            } else if (playAgain.equals("tied")) {
+                                this.twoPlayers();
+                            } else if (playAgain.equals("no")) {
+                                System.out.println(player1.name + ", you have " + player1.score + " points.");
+                                System.out.println(player2.name + ", you have " + player2.score + " points.");
+                                System.out.println("Thanks for playing!");
+                            } else {
+                                throw new InputMismatchException();
+                            }
+                        }
+                        catch (InputMismatchException e) {
+                            System.out.println("Please enter yes or no.");
+                        }
+                    }
+                } catch (InputMismatchException e) {
+                    // handle improper input
+                    System.out.println("Please enter: rock, paper, or scissors.");
+                    this.computerPlayer();
+                }
+            }
+        }
+        catch (InputMismatchException e) {
+            // handle improper input
+            System.out.println("Please enter: rock, paper, or scissors.");
+            this.computerPlayer();
         }
     }
 
@@ -134,7 +168,7 @@ public class Game {
             player1.score += 1;
             playAgain = scanner.nextLine();
         } else if (player1.play.equals("paper") && player2.play.equals("scissors")) {
-            System.out.println("Computer wins! Play again?");
+            System.out.println(player2.name + " wins! Play again?");
             player1.outcome = "lost";
             player2.outcome = "won";
             player2.score += 1;
@@ -146,7 +180,7 @@ public class Game {
             player1.score += 1;
             playAgain = scanner.nextLine();
         } else if (player1.play.equals("scissors") && player2.play.equals("rock")) {
-            System.out.println("Computer wins! Play again?");
+            System.out.println(player2.name + " wins! Play again?");
             player1.outcome = "lost";
             player2.outcome = "won";
             player2.score += 1;
@@ -158,6 +192,6 @@ public class Game {
             player1.score += 1;
             playAgain = scanner.nextLine();
         }
-        return playAgain;
+        return playAgain.toLowerCase();
     }
 }
