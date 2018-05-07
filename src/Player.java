@@ -2,10 +2,10 @@
 
 public class Player {
 //    public static ArrayList<String> history;
-    public String name;
-    public String play;
-    public int score;
-    public String outcome;
+    private String name;
+    private String play;
+    int score;
+    private String outcome;
 
     public String getName() {
         return name;
